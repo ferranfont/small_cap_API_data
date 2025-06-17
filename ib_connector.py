@@ -21,7 +21,7 @@ def get_ibkr_data(
         durationStr=f'{days} D',
         barSizeSetting=bar_size,
         whatToShow=what_to_show,
-        useRTH=use_rth,
+        useRTH=True,
         formatDate=1
     )
 
