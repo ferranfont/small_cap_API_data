@@ -1,0 +1,1 @@
+script para descargar datos de Interactive Brokers
