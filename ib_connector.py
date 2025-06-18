@@ -2,7 +2,7 @@ from ib_insync import *
 import pandas as pd
 
 def get_ibkr_data(
-    symbol='KLTO',
+    symbol='AAPL',
     exchange='SMART',
     currency='USD',
     days=3,
@@ -28,8 +28,8 @@ def get_ibkr_data(
     df = util.df(bars)
     ib.disconnect()
     
-    print(df.head(40))
-    print('\n ')
+    print(df.head(10))
+    print('\n')
     print("Fecha inicial:", df['date'].min())
     print("Fecha final:  ", df['date'].max())
     print("Días de diferencia:", df['date'].max() - df['date'].min())
