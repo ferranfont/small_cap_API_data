@@ -1,3 +1,5 @@
+# Este códigohace una petición única a la API de Interactive Brokers para obtener datos históricos de un símbolo específico.
+
 from ib_insync import *
 import pandas as pd
 
