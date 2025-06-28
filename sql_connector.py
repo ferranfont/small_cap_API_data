@@ -1,26 +1,34 @@
-import pandas as pd
-from sqlalchemy import create_engine
+import os
+import mysql.connector
+from dotenv import load_dotenv
 
-# Create connection
-engine = create_engine('mysql+mysqlconnector://root:Plus7070@127.0.0.1/small_caps')
+# Cargar variables desde .env
+load_dotenv()
+user = os.getenv("DB_USER")
+password = os.getenv("DB_PASSWORD")
+host = os.getenv("DB_HOST")
+database = os.getenv("DB_NAME")
 
-# Define tables to read
-tables_to_read = ['prices']
-dataframes = {}
+try:
+    # Conectar a la base de datos
+    connection = mysql.connector.connect(
+        host=host,
+        user=user,
+        password=password,
+        database=database
+    )
 
-# Read each table into a pandas DataFrame
-for table in tables_to_read:
-    query = f'SELECT * FROM {table}'
-    dataframes[table] = pd.read_sql(query, engine)
+    cursor = connection.cursor()
+    cursor.execute("SELECT COUNT(*) FROM prices")
+    count = cursor.fetchone()[0]
 
-# Dispose engine after use (optional)
-engine.dispose()
+    print(f"📊 Total filas en 'prices': {count:,}")
 
-# Display results
-pd.set_option('display.width', 500)
-for table_name, df in dataframes.items():
-    print(f"Tabla: {table_name}")
-    print(df.head())  # Preview data
+except mysql.connector.Error as err:
+    print(f"❌ Error de conexión: {err}")
 
-# Optionally assign directly
-prices = dataframes['prices']
+finally:
+    if 'cursor' in locals():
+        cursor.close()
+    if 'connection' in locals() and connection.is_connected():
+        connection.close()

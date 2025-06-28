@@ -3,7 +3,8 @@
 from ib_insync import *
 import pandas as pd
 import time
-    
+from us_market_open_days_fraction_10_days import generate_10_day_blocks
+
 
 def get_ibkr_data_loop(
     symbol='AAPL',
@@ -16,6 +17,13 @@ def get_ibkr_data_loop(
     path_to_end_dates="outputs/endDateTime_blocks.txt",
     delay_seconds=10  # Pause between requests
 ):
+    
+    # update first time data upon IPO
+    # llama al código que busca el primer dia de trading
+    # y fracciona las fechas en bloques de 10 días para evitar rate limits
+    generate_10_day_blocks(symbol)
+
+    
     # Load endDateTime values
     with open(path_to_end_dates, "r") as f:
         end_dates = [line.strip() for line in f if line.strip()]
@@ -51,10 +59,5 @@ def get_ibkr_data_loop(
         time.sleep(delay_seconds)  # ⏸ Pause to avoid rate limit
 
     ib.disconnect()
-
-    # Save to file
-    output_path = "outputs/ib_data_full.csv"
-    all_data.to_csv(output_path, index=False)
-    print(f"\n💾 Final dataset saved to '{output_path}' ({len(all_data)} rows)")
 
     return all_data

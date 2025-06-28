@@ -1,21 +1,29 @@
+# chart_visor_resampled.py
 import pandas as pd
 from chart_volume import plot_close_and_volume
 
-SYMBOL = 'symbol'
-RESAMPLED_TO = '1h'  # Resample to 1 hour
+def plot_close_and_volume_resample(df, symbol, timeframe='1D',v_lines=None):
+    SYMBOL = symbol
+    RESAMPLED_TO = timeframe
 
-# Leer CSV y preparar índice
-df = pd.read_csv("outputs/ib_data_full.csv")
-df['date'] = pd.to_datetime(df['date'], utc=True)  # Asegura timezone consistente
-df = df.set_index('date')
+    print(f"📊 Resampling data for {SYMBOL} to {RESAMPLED_TO}...")
 
-# Resamplear por hora: último close, suma de volumen
-df_resampled = df[['close', 'volume']].resample(RESAMPLED_TO).agg({
-    'close': 'last',
-    'volume': 'sum'
-}).dropna().reset_index()
+    # Asegura datetime y zona horaria
+    df['date'] = pd.to_datetime(df['date'], utc=True)
+    df = df.set_index('date')
 
-print(df_resampled.head())
+    # Resample: último cierre y suma del volumen
+    df_resampled = df[['close', 'volume']].resample(RESAMPLED_TO).agg({
+        'close': 'last',
+        'volume': 'sum'
+    }).dropna().reset_index()
 
-# Graficar
-plot_close_and_volume(df=df_resampled, symbol=SYMBOL)
+    print(df_resampled.head())
+
+    # Llamar al graficador principal (sin highlight_dates)
+    plot_close_and_volume(
+        timeframe=RESAMPLED_TO,
+        df=df_resampled,
+        symbol=SYMBOL,
+        v_lines=v_lines
+    )
