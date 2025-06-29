@@ -1,3 +1,6 @@
+# Never upload environment files
+.env
+
 # Ignorar archivos de datos
 *.csv
 *.tsv

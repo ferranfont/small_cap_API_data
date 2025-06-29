@@ -4,7 +4,7 @@ from sqlalchemy import create_engine
 from dotenv import load_dotenv
 
 # --- CONFIG ---
-SYMBOL = 'VERA'
+SYMBOL = 'ORKA'
 OUTPUT_PATH = 'outputs/short_test_VERA.csv'
 
 # --- DB CREDENCIALES ---
@@ -63,6 +63,7 @@ else:
     profit_pct = 100 * profit_abs / entry_price
     closed = False
 
+
 # --- EXPORTAR RESULTADO ---
 result = {
     'symbol': SYMBOL,
@@ -82,7 +83,61 @@ result = {
 }
 
 os.makedirs('outputs', exist_ok=True)
-pd.DataFrame([result]).to_csv(OUTPUT_PATH, index=False)
-print(f"✅ Resultado guardado en {OUTPUT_PATH}")
-print(pd.DataFrame([result]).T)
+tracking_record_time = pd.DataFrame([result])
+tracking_record_time.to_csv('outputs/tracking_record_time.csv', index=False)
+print(f"✅ Resultado guardado en outputs/tracking_record_time.csv")
+print(tracking_record_time)
+import plotly.graph_objs as go
 
+# --- GRAFICAR EVOLUCIÓN DEL PRECIO Y MARCAS DE ENTRADA/SALIDA ---
+fig = go.Figure()
+
+# 1. Línea de precios
+fig.add_trace(go.Scatter(
+    x=df['date'],
+    y=df['close'],
+    mode='lines',
+    name='Close',
+    line=dict(color='black', width=1.5)
+))
+
+# 2. Triángulo rojo down (entrada short)
+fig.add_trace(go.Scatter(
+    x=[entry_date],
+    y=[entry_price],
+    mode='markers',
+    name='Short Entry',
+    marker=dict(
+        symbol='triangle-down',
+        color='red',
+        size=14,
+        line=dict(color='black', width=1)
+    ),
+    hovertext=f'Entry Short<br>Date: {entry_date}<br>Price: {entry_price:.2f}',
+    showlegend=True
+))
+
+# 3. Triángulo azul up (compra para cerrar)
+fig.add_trace(go.Scatter(
+    x=[exit_date],
+    y=[exit_price],
+    mode='markers',
+    name='Buy to Close',
+    marker=dict(
+        symbol='triangle-up',
+        color='blue',
+        size=14,
+        line=dict(color='black', width=1)
+    ),
+    hovertext=f'Close Short<br>Date: {exit_date}<br>Price: {exit_price:.2f}',
+    showlegend=True
+))
+
+fig.update_layout(
+    title=f'Evolución de precio y trade short en {SYMBOL}',
+    xaxis_title='Fecha',
+    yaxis_title='Precio Close',
+    legend=dict(yanchor="top", y=0.99, xanchor="left", x=0.01)
+)
+
+fig.show()

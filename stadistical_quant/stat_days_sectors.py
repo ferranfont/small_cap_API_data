@@ -1,4 +1,9 @@
+# el código procesa datos de acciones desde una base de datos MySQL, calcula fechas clave de caídas y genera gráficos.
+# crea un CSV llamado bio_summary.csv con las días necesarios para alcanzar las caídas.
+
 import os
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import pandas as pd
 from sqlalchemy import create_engine
 from dotenv import load_dotenv
@@ -114,3 +119,5 @@ for idx, SYMBOL in enumerate(tickers_in_db):
     )
 
 print(f"\n✅ Proceso terminado. Revisa el CSV en: {summary_path}")
+
+
