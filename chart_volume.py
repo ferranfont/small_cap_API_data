@@ -3,8 +3,10 @@ import pandas as pd
 import plotly.graph_objs as go
 from plotly.subplots import make_subplots
 
-def plot_close_and_volume(timeframe, df, symbol='AAPL', v_lines=None):
-    html_path = 'charts/close_vol_chart_rth.html'
+def plot_close_and_volume(timeframe, df, symbol='AAPL', v_lines=None, df_tracking=None):
+    # Paths con SYMBOL y timeframe en el nombre
+    html_path = f'charts/close_vol_chart_{symbol}_{timeframe}.html'
+    png_path = f'charts/close_vol_chart_{symbol}_{timeframe}.png'
     os.makedirs(os.path.dirname(html_path), exist_ok=True)
 
     df = df.rename(columns=str.lower)
@@ -17,6 +19,45 @@ def plot_close_and_volume(timeframe, df, symbol='AAPL', v_lines=None):
         row_heights=[0.80, 0.20],
         vertical_spacing=0.03,
     )
+
+    # Entradas y salidas del df_tracking (si existe)
+    if df_tracking is not None and not df_tracking.empty:
+        entry_date = pd.to_datetime(df_tracking.iloc[0]['entry_date'])
+        entry_price = df_tracking.iloc[0]['entry_price']
+        exit_date = pd.to_datetime(df_tracking.iloc[0]['exit_date'])   
+        exit_price = df_tracking.iloc[0]['exit_price']
+
+        # Triángulo rojo (entrada corto)
+        fig.add_trace(go.Scatter(
+            x=[entry_date],
+            y=[entry_price],
+            mode='markers+text',
+            name='Manual Entry',
+            text=[f'Corto: {entry_price:.2f}'],
+            textfont=dict(size=12, color='red'),
+            textposition='top right',
+            marker=dict(
+                size=14,
+                color='red',
+                symbol='triangle-down'
+            )
+        ), row=1, col=1)
+
+        # Triángulo verde (cierre corto)
+        fig.add_trace(go.Scatter(
+            x=[exit_date],
+            y=[exit_price],
+            mode='markers+text',
+            name='Manual Exit',
+            text=[f'Cierre: {exit_price:.2f}'],
+            textfont=dict(size=12, color='green'),
+            textposition='top right',
+            marker=dict(
+                size=14,
+                color='green',
+                symbol='triangle-up'
+            )
+        ), row=1, col=1)
 
     # Línea de cierre
     fig.add_trace(go.Scatter(
@@ -38,12 +79,11 @@ def plot_close_and_volume(timeframe, df, symbol='AAPL', v_lines=None):
         name='Volumen'
     ), row=2, col=1)
 
-
-    # ------- BLOQUE CORRECTO PARA VLINES -------
+    # Líneas verticales (vlines)
     shapes = []
     if v_lines is not None:
         for v in v_lines:
-            if pd.isna(v):      # <-- SALTA si es NaT o NaN
+            if pd.isna(v):      # SALTA si es NaT o NaN
                 continue
             v_dt = pd.to_datetime(v).normalize()
             v_str = v_dt.strftime('%Y-%m-%dT00:00:00')
@@ -63,9 +103,6 @@ def plot_close_and_volume(timeframe, df, symbol='AAPL', v_lines=None):
                 )
             )
 
-
-    # --------------------------------------------
-
     fig.update_layout(
         dragmode='pan',
         title=f'{symbol}_RTH_{timeframe}',
@@ -83,7 +120,8 @@ def plot_close_and_volume(timeframe, df, symbol='AAPL', v_lines=None):
             tickangle=0,
             showgrid=False,
             linecolor='gray',
-            linewidth=1
+            linewidth=1,
+            range=[df['date'].min(), df['date'].max()]
         ),
         yaxis=dict(showgrid=True, linecolor='gray', linewidth=1),
         xaxis2=dict(
@@ -92,14 +130,21 @@ def plot_close_and_volume(timeframe, df, symbol='AAPL', v_lines=None):
             tickangle=45,
             showgrid=False,
             linecolor='gray',
-            linewidth=1
+            linewidth=1,
+            range=[df['date'].min(), df['date'].max()]
         ),
         yaxis2=dict(showgrid=True, linecolor='grey', linewidth=1),
         shapes=shapes
     )
-
+    # Guarda HTML
     fig.write_html(html_path, config={"scrollZoom": True})
-    print(f"✅ Gráfico Plotly guardado como '{html_path}'")
+    print(f"✅ Gráfico Plotly guardado como HTML: '{html_path}'")
 
+    # Abre el HTML en el navegador por defecto
     import webbrowser
     webbrowser.open('file://' + os.path.realpath(html_path))
+
+    # (Opcional, si quieres mostrar tracking info en consola)
+    print(df_tracking)
+
+

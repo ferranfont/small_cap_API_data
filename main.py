@@ -1,3 +1,5 @@
+# Esté c
+odigo rellena la base de datos MySQL con datos de acciones pequeñas y genera gráficos de volumen y cierre
 import os
 import pandas as pd
 from ib_connector_single_call import get_ibkr_data

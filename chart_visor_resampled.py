@@ -2,7 +2,8 @@
 import pandas as pd
 from chart_volume import plot_close_and_volume
 
-def plot_close_and_volume_resample(df, symbol, timeframe='1D',v_lines=None):
+def plot_close_and_volume_resample(df, symbol, timeframe='1D',v_lines=None, df_tracking=None):
+
     SYMBOL = symbol
     RESAMPLED_TO = timeframe
 
@@ -25,5 +26,6 @@ def plot_close_and_volume_resample(df, symbol, timeframe='1D',v_lines=None):
         timeframe=RESAMPLED_TO,
         df=df_resampled,
         symbol=SYMBOL,
-        v_lines=v_lines
+        v_lines=v_lines,
+        df_tracking=df_tracking
     )

@@ -8,7 +8,8 @@ import pandas as pd
 from sqlalchemy import create_engine
 from dotenv import load_dotenv
 from chart_visor_resampled import plot_close_and_volume_resample
-from us_market_open_days_fraction_10_days import get_first_valid_date
+from Utils.us_market_open_days_fraction_10_days import get_first_valid_date
+
 from datetime import datetime
 
 # Lee tickers

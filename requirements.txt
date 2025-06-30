@@ -4,3 +4,7 @@ sqlalchemy
 python-dotenv
 plotly
 matplotlib
+kaleido
+requests    
+numpy
+scipy

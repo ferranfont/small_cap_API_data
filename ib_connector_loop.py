@@ -3,7 +3,7 @@
 from ib_insync import *
 import pandas as pd
 import time
-from us_market_open_days_fraction_10_days import generate_10_day_blocks
+from Utils.us_market_open_days_fraction_10_days import generate_10_day_blocks
 
 
 def get_ibkr_data_loop(
