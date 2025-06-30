@@ -7,9 +7,13 @@ import webbrowser
 
 # === LECTURA Y LIMPIEZA ===
 df = pd.read_csv('outputs/tracking_record_time.csv')
+df = pd.read_csv('outputs/tracking_record_time.csv')
+df.columns = df.columns.str.strip()  # <-- elimina espacios a ambos lados
 df['entry_date'] = pd.to_datetime(df['entry_date'], errors='coerce')
 df['exit_date'] = pd.to_datetime(df['exit_date'], errors='coerce')
 df = df.sort_values('entry_date').reset_index(drop=True)
+
+
 
 # === CÁLCULO DE PROFIT ACUMULADO ===
 df['total_profit'] = pd.to_numeric(df['total_profit'], errors='coerce').fillna(0)
