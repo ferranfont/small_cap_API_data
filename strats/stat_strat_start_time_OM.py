@@ -155,7 +155,7 @@ fig_time.write_html(hist_time_path)
 fig_maxus = px.histogram(
     df,
     x='max_us_to_max',
-    nbins=100,
+    nbins=200,
     title='Histogram: Absolute Distance to Max Price ($)',
     template='plotly_white',
     color_discrete_sequence=['orange']

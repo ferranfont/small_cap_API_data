@@ -6,6 +6,8 @@ pip install -r requirements.txt
 
 script para descargar datos de Interactive Brokers
 
+main.py
+
 - Le el vector de DATOS ./DATA/smal_caps_bio.csv con las empresas biotechnológicas seleccionadas a fecha Junio de 2025
 - Hace una petición a df = get_ibkr_data_loop() ya la almacena en un Dataframe
 - Inserta el df en mysql insertar_df_en_mysql(df, ticker=SYMBOL)
